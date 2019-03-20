@@ -1,3 +1,5 @@
 .DS_Store
 build
 exr
+.idea
+cmake-build-debug

@@ -31,20 +31,21 @@ void make_coord_space(Matrix3x3& o2w, const Vector3D& n) {
 // Mirror BSDF //
 
 Spectrum MirrorBSDF::f(const Vector3D& wo, const Vector3D& wi) {
-  return Spectrum();
+  return {};
 }
 
 Spectrum MirrorBSDF::sample_f(const Vector3D& wo, Vector3D* wi, float* pdf) {
-  // TODO: 1.2
+  // 1.2
   // Using BSDF::reflect(), implement sample_f for a mirror surface
-
-  return Spectrum();
+  reflect(wo, wi);
+  *pdf = 1;
+  return reflectance / abs_cos_theta(*wi);
 }
 
 // Microfacet BSDF //
 
 double MicrofacetBSDF::G(const Vector3D& wo, const Vector3D& wi) {
-    return 1.0 / (1.0 + Lambda(wi) + Lambda(wo));
+  return 1.0 / (1.0 + Lambda(wi) + Lambda(wo));
 }
 
 double MicrofacetBSDF::D(const Vector3D& h) {
@@ -92,34 +93,52 @@ Spectrum RefractionBSDF::sample_f(const Vector3D& wo, Vector3D* wi, float* pdf) 
 // Glass BSDF //
 
 Spectrum GlassBSDF::f(const Vector3D& wo, const Vector3D& wi) {
-  return Spectrum();
+  return {};
 }
 
 Spectrum GlassBSDF::sample_f(const Vector3D& wo, Vector3D* wi, float* pdf) {
-
-  // TODO: 1.4
+  // 1.4
   // Compute Fresnel coefficient and either reflect or refract based on it.
 
-  return Spectrum();
+  if (refract(wo, wi, ior)) {
+    float eta = (wo.z >= 0) ? 1 / ior : ior;
+    auto r0 = (float) pow((1 - eta) / (1 + eta), 2);
+    auto r = r0 + (1 - r0) * (float) pow(1 - abs(wo.z), 5);
+    if (coin_flip(r)) { // reflection
+      reflect(wo, wi);
+      *pdf = r;
+      return r * reflectance / abs_cos_theta(*wi);
+    } else { // refraction
+      *pdf = 1 - r;
+      return (1 - r) * transmittance / abs_cos_theta(*wi) / eta / eta;
+    }
+  } else { // total internal refraction, treat as mirror
+    reflect(wo, wi);
+    *pdf = 1;
+    return reflectance / abs_cos_theta(*wi);
+  }
 }
 
 void BSDF::reflect(const Vector3D& wo, Vector3D* wi) {
-
-  // TODO: 1.1
+  // 1.1
   // Implement reflection of wo about normal (0,0,1) and store result in wi.
-
-
+  *wi = {-wo.x, -wo.y, wo.z};
 }
 
 bool BSDF::refract(const Vector3D& wo, Vector3D* wi, float ior) {
-
-  // TODO: 1.3
+  // 1.3
   // Use Snell's Law to refract wo surface and store result ray in wi.
   // Return false if refraction does not occur due to total internal reflection
   // and true otherwise. When dot(wo,n) is positive, then wo corresponds to a
   // ray entering the surface through vacuum.
-
-  return true;
+  float eta = (wo.z >= 0) ? 1 / ior : ior;
+  auto discriminant = (float) (1 - eta * eta * (1 - wo.z * wo.z));
+  if (discriminant < 0) // total internal reflectio
+    return false;
+  else {
+    *wi = {-eta * wo.x, -eta * wo.y, -wo.z / abs(wo.z) * sqrt(discriminant)};
+    return true;
+  }
 }
 
 // Emission BSDF //
@@ -130,7 +149,7 @@ Spectrum EmissionBSDF::f(const Vector3D& wo, const Vector3D& wi) {
 
 Spectrum EmissionBSDF::sample_f(const Vector3D& wo, Vector3D* wi, float* pdf) {
   *pdf = 1.0 / PI;
-  *wi  = sampler.get_sample(pdf);
+  *wi = sampler.get_sample(pdf);
   return Spectrum();
 }
 

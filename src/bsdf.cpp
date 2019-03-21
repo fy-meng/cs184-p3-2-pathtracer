@@ -54,9 +54,7 @@ double MicrofacetBSDF::D(const Vector3D& h) {
   // You will need the roughness alpha.
 
   double tan_t = tan(acos(h.z));
-  double result = exp(-tan_t * tan_t / alpha / alpha);
-  result /= (PI * alpha * alpha * pow(h.z, 4));
-  return result;
+  return exp(-tan_t * tan_t / alpha / alpha) / (PI * alpha * alpha * pow(h.z, 4));
 }
 
 Spectrum MicrofacetBSDF::F(const Vector3D& wi) {
@@ -91,6 +89,9 @@ Spectrum MicrofacetBSDF::sample_f(const Vector3D& wo, Vector3D* wi, float* pdf) 
   // *Importance* sample Beckmann normal distribution function (NDF) here.
   // Note: You should fill in the sampled direction *wi and the corresponding *pdf,
   //       and return the sampled BRDF value.
+
+  // *wi = cosineHemisphereSampler.get_sample(pdf); //placeholder
+  // return MicrofacetBSDF::f(wo, *wi);
 
   double theta_h = atan(sqrt(-alpha * alpha * log(1 - random_uniform())));
   double phi_h = 2 * PI * random_uniform();

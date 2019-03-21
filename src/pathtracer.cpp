@@ -41,9 +41,9 @@ PathTracer::PathTracer(size_t ns_aa,
                        bool direct_hemisphere_sample,
                        string filename,
                        double lensRadius,
-                       double focalDistance){
+                       double focalDistance) {
   state = INIT,
-  this->ns_aa = ns_aa;
+      this->ns_aa = ns_aa;
   this->max_ray_depth = max_ray_depth;
   this->ns_area_light = ns_area_light;
   this->ns_diff = ns_diff;
@@ -90,7 +90,7 @@ PathTracer::~PathTracer() {
 
 }
 
-void PathTracer::set_scene(Scene *scene) {
+void PathTracer::set_scene(Scene* scene) {
 
   if (state != INIT) {
     return;
@@ -114,7 +114,7 @@ void PathTracer::set_scene(Scene *scene) {
   }
 }
 
-void PathTracer::set_camera(Camera *camera) {
+void PathTracer::set_camera(Camera* camera) {
 
   if (state != INIT) {
     return;
@@ -124,7 +124,7 @@ void PathTracer::set_camera(Camera *camera) {
 
   this->camera->lensRadius = lensRadius;
   this->camera->focalDistance = focalDistance;
-  
+
   if (has_valid_configuration()) {
     state = READY;
   }
@@ -137,7 +137,7 @@ void PathTracer::set_frame_size(size_t width, size_t height) {
   }
   sampleBuffer.resize(width, height);
   frameBuffer.resize(width, height);
-  cell_tl = Vector2D(0,0); 
+  cell_tl = Vector2D(0, 0);
   cell_br = Vector2D(width, height);
   render_cell = false;
   sampleCountBuffer.resize(width * height);
@@ -166,7 +166,7 @@ void PathTracer::update_screen() {
         visualize_cell();
       break;
     case DONE:
-        //sampleBuffer.tonemap(frameBuffer, tm_gamma, tm_level, tm_key, tm_wht);
+      //sampleBuffer.tonemap(frameBuffer, tm_gamma, tm_level, tm_key, tm_wht);
       glDrawPixels(frameBuffer.w, frameBuffer.h, GL_RGBA,
                    GL_UNSIGNED_BYTE, &frameBuffer.data[0]);
       if (render_cell)
@@ -189,10 +189,10 @@ void PathTracer::stop() {
     case RENDERING:
       continueRaytracing = false;
     case DONE:
-      for (int i=0; i<numWorkerThreads; i++) {
-            workerThreads[i]->join();
-            delete workerThreads[i];
-        }
+      for (int i = 0; i < numWorkerThreads; i++) {
+        workerThreads[i]->join();
+        delete workerThreads[i];
+      }
       state = READY;
       break;
   }
@@ -247,13 +247,13 @@ void PathTracer::start_raytracing() {
 
     // populate the tile work queue
     for (size_t y = 0; y < sampleBuffer.h; y += imageTileSize) {
-        for (size_t x = 0; x < sampleBuffer.w; x += imageTileSize) {
-            workQueue.put_work(WorkItem(x, y, imageTileSize, imageTileSize));
-        }
+      for (size_t x = 0; x < sampleBuffer.w; x += imageTileSize) {
+        workQueue.put_work(WorkItem(x, y, imageTileSize, imageTileSize));
+      }
     }
   } else {
-    int w = (cell_br-cell_tl).x;
-    int h = (cell_br-cell_tl).y;
+    int w = (cell_br - cell_tl).x;
+    int h = (cell_br - cell_tl).y;
     int imTS = imageTileSize / 4;
     num_tiles_w = w / imTS + 1;
     num_tiles_h = h / imTS + 1;
@@ -265,17 +265,19 @@ void PathTracer::start_raytracing() {
     // populate the tile work queue
     for (size_t y = cell_tl.y; y < cell_br.y; y += imTS) {
       for (size_t x = cell_tl.x; x < cell_br.x; x += imTS) {
-        workQueue.put_work(WorkItem(x, y, 
-          min(imTS, (int)(cell_br.x-x)), min(imTS, (int)(cell_br.y-y)) ));
+        workQueue.put_work(WorkItem(x, y,
+                                    min(imTS, (int) (cell_br.x - x)), min(imTS, (int) (cell_br.y - y))));
       }
     }
   }
 
-  bvh->total_isects = 0; bvh->total_rays = 0;
+  bvh->total_isects = 0;
+  bvh->total_rays = 0;
   // launch threads
-  fprintf(stdout, "[PathTracer] Rendering... "); fflush(stdout);
-  for (int i=0; i<numWorkerThreads; i++) {
-      workerThreads[i] = new std::thread(&PathTracer::worker_thread, this);
+  fprintf(stdout, "[PathTracer] Rendering... ");
+  fflush(stdout);
+  for (int i = 0; i < numWorkerThreads; i++) {
+    workerThreads[i] = new std::thread(&PathTracer::worker_thread, this);
   }
 }
 
@@ -283,14 +285,14 @@ void PathTracer::render_to_file(string filename, size_t x, size_t y, size_t dx, 
   if (x == -1) {
     unique_lock<std::mutex> lk(m_done);
     start_raytracing();
-    cv_done.wait(lk, [this]{ return state == DONE; });
+    cv_done.wait(lk, [this] { return state == DONE; });
     lk.unlock();
     save_image(filename);
     fprintf(stdout, "[PathTracer] Job completed.\n");
   } else {
     render_cell = true;
-    cell_tl = Vector2D(x,y);
-    cell_br = Vector2D(x+dx,y+dy);
+    cell_tl = Vector2D(x, y);
+    cell_br = Vector2D(x + dx, y + dy);
     ImageBuffer buffer;
     raytrace_cell(buffer);
     save_image(filename, &buffer);
@@ -302,11 +304,12 @@ void PathTracer::render_to_file(string filename, size_t x, size_t y, size_t dx, 
 void PathTracer::build_accel() {
 
   // collect primitives //
-  fprintf(stdout, "[PathTracer] Collecting primitives... "); fflush(stdout);
+  fprintf(stdout, "[PathTracer] Collecting primitives... ");
+  fflush(stdout);
   timer.start();
-  vector<Primitive *> primitives;
-  for (SceneObject *obj : scene->objects) {
-    const vector<Primitive *> &obj_prims = obj->get_primitives();
+  vector<Primitive*> primitives;
+  for (SceneObject* obj : scene->objects) {
+    const vector<Primitive*>& obj_prims = obj->get_primitives();
     primitives.reserve(primitives.size() + obj_prims.size());
     primitives.insert(primitives.end(), obj_prims.begin(), obj_prims.end());
   }
@@ -314,7 +317,7 @@ void PathTracer::build_accel() {
   fprintf(stdout, "Done! (%.4f sec)\n", timer.duration());
 
   // build BVH //
-  fprintf(stdout, "[PathTracer] Building BVH from %lu primitives... ", primitives.size()); 
+  fprintf(stdout, "[PathTracer] Building BVH from %lu primitives... ", primitives.size());
   fflush(stdout);
   timer.start();
   bvh = new BVHAccel(primitives);
@@ -333,15 +336,21 @@ void PathTracer::visualize_accel() const {
   glEnable(GL_DEPTH_TEST);
 
   // hardcoded color settings
-  Color cnode = Color(.5, .5, .5); float cnode_alpha = 0.25f;
-  Color cnode_hl = Color(1., .25, .0); float cnode_hl_alpha = 0.6f;
-  Color cnode_hl_child = Color(1., 1., 1.); float cnode_hl_child_alpha = 0.6f;
+  Color cnode = Color(.5, .5, .5);
+  float cnode_alpha = 0.25f;
+  Color cnode_hl = Color(1., .25, .0);
+  float cnode_hl_alpha = 0.6f;
+  Color cnode_hl_child = Color(1., 1., 1.);
+  float cnode_hl_child_alpha = 0.6f;
 
-  Color cprim_hl_left = Color(.6, .6, 1.); float cprim_hl_left_alpha = 1.f;
-  Color cprim_hl_right = Color(.8, .8, 1.); float cprim_hl_right_alpha = 1.f;
-  Color cprim_hl_edges = Color(0., 0., 0.); float cprim_hl_edges_alpha = 0.5f;
+  Color cprim_hl_left = Color(.6, .6, 1.);
+  float cprim_hl_left_alpha = 1.f;
+  Color cprim_hl_right = Color(.8, .8, 1.);
+  float cprim_hl_right_alpha = 1.f;
+  Color cprim_hl_edges = Color(0., 0., 0.);
+  float cprim_hl_edges_alpha = 0.5f;
 
-  BVHNode *selected = selectionHistory.top();
+  BVHNode* selected = selectionHistory.top();
 
   // render solid geometry (with depth offset)
   glPolygonOffset(1.0, 1.0);
@@ -364,7 +373,7 @@ void PathTracer::visualize_accel() const {
   glDepthMask(GL_FALSE);
 
   // create traversal stack
-  stack<BVHNode *> tstack;
+  stack<BVHNode*> tstack;
 
   // push initial traversal data
   tstack.push(bvh->get_root());
@@ -372,7 +381,7 @@ void PathTracer::visualize_accel() const {
   // draw all BVH bboxes with non-highlighted color
   while (!tstack.empty()) {
 
-    BVHNode *current = tstack.top();
+    BVHNode* current = tstack.top();
     tstack.pop();
 
     current->bb.draw(cnode, cnode_alpha);
@@ -389,29 +398,29 @@ void PathTracer::visualize_accel() const {
 
   // now perform visualization of the rays
   if (show_rays) {
-      glLineWidth(1.f);
-      glBegin(GL_LINES);
+    glLineWidth(1.f);
+    glBegin(GL_LINES);
 
-      for (size_t i=0; i<rayLog.size(); i+=500) {
+    for (size_t i = 0; i < rayLog.size(); i += 500) {
 
-          const static double VERY_LONG = 10e4;
-          double ray_t = VERY_LONG;
+      const static double VERY_LONG = 10e4;
+      double ray_t = VERY_LONG;
 
-          // color rays that are hits yellow
-          // and rays this miss all geometry red
-          if (rayLog[i].hit_t >= 0.0) {
-              ray_t = rayLog[i].hit_t;
-              glColor4f(1.f, 1.f, 0.f, 0.1f);
-          } else {
-              glColor4f(1.f, 0.f, 0.f, 0.1f);
-          }
-
-          Vector3D end = rayLog[i].o + ray_t * rayLog[i].d;
-
-          glVertex3f(rayLog[i].o[0], rayLog[i].o[1], rayLog[i].o[2]);
-          glVertex3f(end[0], end[1], end[2]);
+      // color rays that are hits yellow
+      // and rays this miss all geometry red
+      if (rayLog[i].hit_t >= 0.0) {
+        ray_t = rayLog[i].hit_t;
+        glColor4f(1.f, 1.f, 0.f, 0.1f);
+      } else {
+        glColor4f(1.f, 0.f, 0.f, 0.1f);
       }
-      glEnd();
+
+      Vector3D end = rayLog[i].o + ray_t * rayLog[i].d;
+
+      glVertex3f(rayLog[i].o[0], rayLog[i].o[1], rayLog[i].o[2]);
+      glVertex3f(end[0], end[1], end[2]);
+    }
+    glEnd();
   }
 
   glDepthMask(GL_TRUE);
@@ -438,10 +447,10 @@ void PathTracer::visualize_cell() const {
 
   // Draw the Red Rectangle.
   glBegin(GL_LINE_LOOP);
-  glVertex2f(cell_tl.x, sampleBuffer.h-cell_br.y);
-  glVertex2f(cell_br.x, sampleBuffer.h-cell_br.y);
-  glVertex2f(cell_br.x, sampleBuffer.h-cell_tl.y);
-  glVertex2f(cell_tl.x, sampleBuffer.h-cell_tl.y);
+  glVertex2f(cell_tl.x, sampleBuffer.h - cell_br.y);
+  glVertex2f(cell_br.x, sampleBuffer.h - cell_br.y);
+  glVertex2f(cell_br.x, sampleBuffer.h - cell_tl.y);
+  glVertex2f(cell_tl.x, sampleBuffer.h - cell_tl.y);
   glEnd();
 
   glMatrixMode(GL_PROJECTION);
@@ -458,46 +467,53 @@ void PathTracer::visualize_cell() const {
 
 void PathTracer::key_press(int key) {
 
-  BVHNode *current = selectionHistory.top();
+  BVHNode* current = selectionHistory.top();
   switch (key) {
-  case ']':
-      ns_aa *=2;
+    case ']':
+      ns_aa *= 2;
       fprintf(stdout, "[PathTracer] Samples per pixel changed to %lu\n", ns_aa);
       //tm_key = clamp(tm_key + 0.02f, 0.0f, 1.0f);
       break;
-  case '[':
+    case '[':
       //tm_key = clamp(tm_key - 0.02f, 0.0f, 1.0f);
-      ns_aa /=2;
+      ns_aa /= 2;
       if (ns_aa < 1) ns_aa = 1;
       fprintf(stdout, "[PathTracer] Samples per pixel changed to %lu\n", ns_aa);
       break;
-  case '=': case '+':
+    case '=':
+    case '+':
       ns_area_light *= 2;
       fprintf(stdout, "[PathTracer] Area light sample count increased to %zu.\n", ns_area_light);
       break;
-  case '-': case '_':
+    case '-':
+    case '_':
       if (ns_area_light > 1) ns_area_light /= 2;
       fprintf(stdout, "[PathTracer] Area light sample count decreased to %zu.\n", ns_area_light);
       break;
-  case '.': case '>':
+    case '.':
+    case '>':
       max_ray_depth++;
       fprintf(stdout, "[PathTracer] Max ray depth increased to %zu.\n", max_ray_depth);
       break;
-  case ',': case '<':
+    case ',':
+    case '<':
       if (max_ray_depth) max_ray_depth--;
       fprintf(stdout, "[PathTracer] Max ray depth decreased to %zu.\n", max_ray_depth);
       break;
-  case ';': case ':':
+    case ';':
+    case ':':
       focalDistance += .1;
       camera->focalDistance = focalDistance;
       fprintf(stdout, "[PathTracer] Focal distance increased to %f.\n", camera->focalDistance);
       break;
-  case '\'': case '\"':
+    case '\'':
+    case '\"':
       focalDistance -= .1;
       camera->focalDistance = focalDistance;
       fprintf(stdout, "[PathTracer] Focal distance decreased to %f.\n", camera->focalDistance);
       break;
-  case 'k': case 'K':
+    case 'k':
+    case 'K':
       if (lensRadius == 0)
         lensRadius = .03125f;
       else
@@ -505,7 +521,8 @@ void PathTracer::key_press(int key) {
       camera->lensRadius = lensRadius;
       fprintf(stdout, "[PathTracer] Aperture increased to %f.\n", camera->lensRadius);
       break;
-  case 'l': case 'L':
+    case 'l':
+    case 'L':
       if (lensRadius <= .03125f)
         lensRadius = 0.;
       else
@@ -513,31 +530,31 @@ void PathTracer::key_press(int key) {
       camera->lensRadius = lensRadius;
       fprintf(stdout, "[PathTracer] Aperture decreased to %f.\n", camera->lensRadius);
       break;
-  case KEYBOARD_UP:
+    case KEYBOARD_UP:
       if (current != bvh->get_root()) {
-          selectionHistory.pop();
+        selectionHistory.pop();
       }
       break;
-  case KEYBOARD_LEFT:
+    case KEYBOARD_LEFT:
       if (current->l) {
-          selectionHistory.push(current->l);
+        selectionHistory.push(current->l);
       }
       break;
-  case KEYBOARD_RIGHT:
+    case KEYBOARD_RIGHT:
       if (current->l) {
-          selectionHistory.push(current->r);
+        selectionHistory.push(current->r);
       }
       break;
 
-  case 'C':
-    render_cell = !render_cell;
-    if (render_cell)
-      fprintf(stdout, "[PathTracer] Now in cell render mode.\n");
-    else
-      fprintf(stdout, "[PathTracer] No longer in cell render mode.\n");
-  break;
+    case 'C':
+      render_cell = !render_cell;
+      if (render_cell)
+        fprintf(stdout, "[PathTracer] Now in cell render mode.\n");
+      else
+        fprintf(stdout, "[PathTracer] No longer in cell render mode.\n");
+      break;
 
-  default:
+    default:
       return;
   }
 }
@@ -582,20 +599,20 @@ void PathTracer::raytrace_cell(ImageBuffer& buffer) {
   size_t w = tile_end_x - tile_start_x;
   size_t h = tile_end_y - tile_start_y;
   HDRImageBuffer sb(w, h);
-  buffer.resize(w,h);
+  buffer.resize(w, h);
 
   stop();
   render_cell = true;
   {
     unique_lock<std::mutex> lk(m_done);
     start_raytracing();
-    cv_done.wait(lk, [this]{ return state == DONE; });
+    cv_done.wait(lk, [this] { return state == DONE; });
     lk.unlock();
   }
 
   for (size_t y = tile_start_y; y < tile_end_y; y++) {
     for (size_t x = tile_start_x; x < tile_end_x; x++) {
-        buffer.data[w*(y-tile_start_y)+(x-tile_start_x)] = frameBuffer.data[x+y*sampleBuffer.w];
+      buffer.data[w * (y - tile_start_y) + (x - tile_start_x)] = frameBuffer.data[x + y * sampleBuffer.w];
     }
   }
 }
@@ -608,10 +625,10 @@ void PathTracer::worker_thread() {
   WorkItem work;
   while (continueRaytracing && workQueue.try_get_work(&work)) {
     raytrace_tile(work.tile_x, work.tile_y, work.tile_w, work.tile_h);
-    { 
+    {
       lock_guard<std::mutex> lk(m_done);
       ++tilesDone;
-      if (!render_silent)  cout << "\r[PathTracer] Rendering... " << int((double)tilesDone/tilesTotal * 100) << '%';
+      if (!render_silent) cout << "\r[PathTracer] Rendering... " << int((double) tilesDone / tilesTotal * 100) << '%';
       cout.flush();
     }
   }
@@ -619,15 +636,17 @@ void PathTracer::worker_thread() {
   workerDoneCount++;
   if (!continueRaytracing && workerDoneCount == numWorkerThreads) {
     timer.stop();
-    if (!render_silent)  fprintf(stdout, "\n[PathTracer] Rendering canceled!\n");
+    if (!render_silent) fprintf(stdout, "\n[PathTracer] Rendering canceled!\n");
     state = READY;
   }
 
   if (continueRaytracing && workerDoneCount == numWorkerThreads) {
     timer.stop();
-    if (!render_silent)  fprintf(stdout, "\r[PathTracer] Rendering... 100%%! (%.4fs)\n", timer.duration());
-    if (!render_silent)  fprintf(stdout, "[PathTracer] BVH traced %llu rays.\n", bvh->total_rays);
-    if (!render_silent)  fprintf(stdout, "[PathTracer] Averaged %f intersection tests per ray.\n", (((double)bvh->total_isects)/bvh->total_rays));
+    if (!render_silent) fprintf(stdout, "\r[PathTracer] Rendering... 100%%! (%.4fs)\n", timer.duration());
+    if (!render_silent) fprintf(stdout, "[PathTracer] BVH traced %llu rays.\n", bvh->total_rays);
+    if (!render_silent)
+      fprintf(stdout, "[PathTracer] Averaged %f intersection tests per ray.\n",
+              (((double) bvh->total_isects) / bvh->total_rays));
 
     lock_guard<std::mutex> lk(m_done);
     state = DONE;
@@ -644,24 +663,24 @@ void PathTracer::save_image(string filename, ImageBuffer* buffer) {
 
   if (filename == "") {
     time_t rawtime;
-    time (&rawtime);
+    time(&rawtime);
 
     time_t t = time(nullptr);
-    tm *lt = localtime(&t);
+    tm* lt = localtime(&t);
     stringstream ss;
-    ss << this->filename << "_screenshot_" << lt->tm_mon+1 << "-" << lt->tm_mday << "_" 
-      << lt->tm_hour << "-" << lt->tm_min << "-" << lt->tm_sec << ".png";
-    filename = ss.str();  
+    ss << this->filename << "_screenshot_" << lt->tm_mon + 1 << "-" << lt->tm_mday << "_"
+       << lt->tm_hour << "-" << lt->tm_min << "-" << lt->tm_sec << ".png";
+    filename = ss.str();
   }
 
   uint32_t* frame = &buffer->data[0];
   size_t w = buffer->w;
   size_t h = buffer->h;
   uint32_t* frame_out = new uint32_t[w * h];
-  for(size_t i = 0; i < h; ++i) {
+  for (size_t i = 0; i < h; ++i) {
     memcpy(frame_out + i * w, frame + (h - i - 1) * w, 4 * w);
   }
-  
+
   for (size_t i = 0; i < w * h; ++i) {
     frame_out[i] |= 0xFF000000;
   }
@@ -669,7 +688,7 @@ void PathTracer::save_image(string filename, ImageBuffer* buffer) {
   fprintf(stderr, "[PathTracer] Saving to file: %s... ", filename.c_str());
   lodepng::encode(filename, (unsigned char*) frame_out, w, h);
   fprintf(stderr, "Done!\n");
-  
+
   delete[] frame_out;
 
   save_sampling_rate_image(filename);
@@ -681,30 +700,30 @@ void PathTracer::save_sampling_rate_image(string filename) {
   ImageBuffer outputBuffer(w, h);
 
   for (int x = 0; x < w; x++) {
-      for (int y = 0; y < h; y++) {
-          float samplingRate = sampleCountBuffer[y * w + x] * 1.0f / ns_aa;
+    for (int y = 0; y < h; y++) {
+      float samplingRate = sampleCountBuffer[y * w + x] * 1.0f / ns_aa;
 
-          Color c;
-          if (samplingRate <= 0.5) {
-              float r = (0.5 - samplingRate) / 0.5;
-              c = Color(0.0f, 0.0f, 1.0f) * r + Color(0.0f, 1.0f, 0.0f) * (1.0 - r);
-          } else {
-              float r = (1.0 - samplingRate) / 0.5;
-              c = Color(0.0f, 1.0f, 0.0f) * r + Color(1.0f, 0.0f, 0.0f) * (1.0 - r);
-          }
-          outputBuffer.update_pixel(c, x, h - 1 - y);
+      Color c;
+      if (samplingRate <= 0.5) {
+        float r = (0.5 - samplingRate) / 0.5;
+        c = Color(0.0f, 0.0f, 1.0f) * r + Color(0.0f, 1.0f, 0.0f) * (1.0 - r);
+      } else {
+        float r = (1.0 - samplingRate) / 0.5;
+        c = Color(0.0f, 1.0f, 0.0f) * r + Color(1.0f, 0.0f, 0.0f) * (1.0 - r);
       }
+      outputBuffer.update_pixel(c, x, h - 1 - y);
+    }
   }
   uint32_t* frame_out = new uint32_t[w * h];
-  
+
   for (size_t i = 0; i < w * h; ++i) {
     uint32_t out_color_hex = 0;
     frame_out[i] = outputBuffer.data.data()[i];
     frame_out[i] |= 0xFF000000;
   }
 
-  lodepng::encode(filename.substr(0,filename.size()-4) + "_rate.png", (unsigned char*) frame_out, w, h);
-  
+  lodepng::encode(filename.substr(0, filename.size() - 4) + "_rate.png", (unsigned char*) frame_out, w, h);
+
   delete[] frame_out;
 }
 

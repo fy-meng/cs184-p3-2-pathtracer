@@ -76,7 +76,7 @@ void Camera::set_screen_size(const size_t screenW, const size_t screenH) {
 void Camera::move_by(const double dx, const double dy, const double d) {
   const double scaleFactor = d / screenDist;
   const Vector3D& displacement =
-    c2w[0] * (dx * scaleFactor) + c2w[1] * (dy * scaleFactor);
+      c2w[0] * (dx * scaleFactor) + c2w[1] * (dy * scaleFactor);
   pos += displacement;
   targetPos += displacement;
 }
@@ -112,29 +112,29 @@ void Camera::compute_position() {
   c2w[0] = screenXDir;
   c2w[1] = screenYDir;
   c2w[2] = dirToCamera.unit();   // camera's view direction is the
-                                 // opposite of of dirToCamera, so
-                                 // directly using dirToCamera as
-                                 // column 2 of the matrix takes [0 0 -1]
-                                 // to the world space view direction
+  // opposite of of dirToCamera, so
+  // directly using dirToCamera as
+  // column 2 of the matrix takes [0 0 -1]
+  // to the world space view direction
 }
 
-  // double hFov, vFov, ar, nClip, fClip;
+// double hFov, vFov, ar, nClip, fClip;
 
-  // // Current position and target point (the point the camera is looking at).
-  // Vector3D pos, targetPos;
+// // Current position and target point (the point the camera is looking at).
+// Vector3D pos, targetPos;
 
-  // // Orientation relative to target, and min & max distance from the target.
-  // double phi, theta, r, minR, maxR;
+// // Orientation relative to target, and min & max distance from the target.
+// double phi, theta, r, minR, maxR;
 
-  // // camera-to-world rotation matrix (note: also need to translate a
-  // // camera-space point by 'pos' to perform a full camera-to-world
-  // // transform)
-  // Matrix3x3 c2w;
+// // camera-to-world rotation matrix (note: also need to translate a
+// // camera-space point by 'pos' to perform a full camera-to-world
+// // transform)
+// Matrix3x3 c2w;
 
-  // // Info about screen to render to; it corresponds to the camera's full field
-  // // of view at some distance.
-  // size_t screenW, screenH;
-  // double screenDist;
+// // Info about screen to render to; it corresponds to the camera's full field
+// // of view at some distance.
+// size_t screenW, screenH;
+// double screenDist;
 void Camera::dump_settings(string filename) {
   ofstream file(filename);
   file << hFov << " " << vFov << " " << ar << " " << nClip << " " << fClip << endl;
@@ -145,7 +145,7 @@ void Camera::dump_settings(string filename) {
   file << endl;
   file << phi << " " << theta << " " << r << " " << minR << " " << maxR << endl;
   for (int i = 0; i < 9; ++i)
-    file << c2w(i/3, i%3) << " ";
+    file << c2w(i / 3, i % 3) << " ";
   file << endl;
   file << screenW << " " << screenH << " " << screenDist << endl;
   file << focalDistance << " " << lensRadius << endl;
@@ -162,7 +162,7 @@ void Camera::load_settings(string filename) {
     file >> targetPos[i];
   file >> phi >> theta >> r >> minR >> maxR;
   for (int i = 0; i < 9; ++i)
-    file >> c2w(i/3, i%3);
+    file >> c2w(i / 3, i % 3);
   file >> screenW >> screenH >> screenDist;
   file >> focalDistance >> lensRadius;
   cout << "[Camera] Loaded settings from " << filename << endl;
@@ -171,11 +171,11 @@ void Camera::load_settings(string filename) {
 
 Ray Camera::generate_ray_for_thin_lens(double x, double y, double rndR, double rndTheta) const {
 
-    // TODO: 4.1
-    // compute position and direction of ray from the input sensor sample coordinate.
-    // Note: use rndR and rndTheta to uniformly sample a unit disk.
+  // TODO: 4.1
+  // compute position and direction of ray from the input sensor sample coordinate.
+  // Note: use rndR and rndTheta to uniformly sample a unit disk.
 
-    return Ray(Vector3D(), Vector3D());
+  return Ray(Vector3D(), Vector3D());
 }
 
 

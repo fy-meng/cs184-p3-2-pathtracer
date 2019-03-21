@@ -18,6 +18,89 @@ the reflected ray or the refracted ray according to Schlick's
 reflection coefficient. The refraction direction is calculated using 
 the Fresnel equation.
 
+<div align="middle">
+    <table width="100%" align="middle">
+        <tr>
+            <td align="middle">
+                <img src="images/p1_spheres_0.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 0.
+                </figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p1_spheres_1.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 1.
+                </figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p1_spheres_2.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 2.
+                </figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p1_spheres_3.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 3.
+                </figcaption>
+            </td>
+        </tr>
+        <tr>
+            <td align="middle">
+                <img src="images/p1_spheres_4.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 4.
+                </figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p1_spheres_5.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 5.
+                </figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p1_spheres_6.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 6.
+                </figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p1_spheres_100.png" width="100%"/>
+                <figcaption align="middle"> 
+                    Max depth of 100.
+                </figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+Note that:
+
+- At depth 0, like the previous project, we can only see the light 
+directly comes from the light source;
+- At depth 1, the spheres are pitch black. Although we should be able 
+to see the reflected light source, the light is further away from the 
+camera than the spheres and thus the spheres are only black;
+- At depth 2, we start to see the reflection of the environment. This 
+requires at least 2 bounces since we at least need a ray to travel in 
+the form of light → mirror → object → camera for us to see reflections 
+of the environment. The right sphere is mostly black since most rays 
+are refracted and yet to be seen: light could be refracted once at 
+this depth and is still inside the glass;
+- At depth 3, we start to see refractions. This requires at least 3 
+bounces since we at least need a ray to travel in the form of light → 
+glass refract → glass refract → object → camera for us to see the 
+refractions of the environment;
+- At depth 4, we start to see the highlight under the glass sphere. 
+This focus effect is due to two refractions and one reflection inside 
+the glass. i.e., light → glass refract → glass reflect → glass 
+refract → object → camera;
+- At depth 5, we start to see the light spot on the right wall. This 
+focus effect is due to two refractions and two reflections inside the 
+glass. i.e., light → glass refract → glass reflect → glass reflect → 
+glass refract → object → camera.
+
 ## Part 2: Microfacet Materials
 
 We implement this feature with the microface BRDF by multiplying the 
@@ -55,8 +138,8 @@ the result.
     </table>
 </div>
 
-As we can see, a higher alpha value means that the macro surface tends 
-to be diffuse, and is glossy when alpha is small.
+As we can see, a higher α value means that the macro surface tends 
+to be diffuse, and is glossy when α is small.
 
 <div align="middle">
     <table width="100%" align="middle">

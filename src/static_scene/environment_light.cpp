@@ -20,7 +20,7 @@ EnvironmentLight::~EnvironmentLight() {
 
 
 void EnvironmentLight::init() {
-  uint32_t w = envMap->w, h = envMap->h;
+  size_t w = envMap->w, h = envMap->h;
   pdf_envmap = new double[w * h];
   conds_y = new double[w * h];
   marginal_y = new double[h];
@@ -148,24 +148,24 @@ Spectrum EnvironmentLight::sample_L(const Vector3D& p, Vector3D* wi,
   // 3.2
   // First implement uniform sphere sampling for the environment light
 
-  // *wi = sampler_uniform_sphere.get_sample();
-  // *distToLight = INF_D;
-  // *pdf = (float) (0.25 / PI);
-  // return bilerp(theta_phi_to_xy(dir_to_theta_phi(*wi)));
+   *wi = sampler_uniform_sphere.get_sample();
+   *distToLight = INF_F;
+   *pdf = (float) (0.25 / PI);
+   return bilerp(theta_phi_to_xy(dir_to_theta_phi(*wi)));
 
   // 3.3
   // Later implement full importance sampling
 
-  size_t w = envMap->w, h = envMap->h;
-  Vector2D sample = sampler_uniform2d.get_sample();
-  unsigned long y = std::upper_bound(marginal_y, marginal_y + h, sample.y) - marginal_y;
-  unsigned long x = std::upper_bound(conds_y + y * w, conds_y + (y + 1) * w, sample.x) - (conds_y + y * w);
-  Vector2D theta_phi = xy_to_theta_phi({x, y});
-
-  *wi = theta_phi_to_dir(theta_phi);
-  *distToLight = INF_F;
-  *pdf = (float) (pdf_envmap[w * y + x] * w * h / (2 * PI * PI * sin(theta_phi.x)));
-  return envMap->data[w * y + x];
+//  size_t w = envMap->w, h = envMap->h;
+//  Vector2D sample = sampler_uniform2d.get_sample();
+//  unsigned long y = std::upper_bound(marginal_y, marginal_y + h, sample.y) - marginal_y;
+//  unsigned long x = std::upper_bound(conds_y + y * w, conds_y + (y + 1) * w, sample.x) - (conds_y + y * w);
+//  Vector2D theta_phi = xy_to_theta_phi({x, y});
+//
+//  *wi = theta_phi_to_dir(theta_phi);
+//  *distToLight = INF_F;
+//  *pdf = (float) (pdf_envmap[w * y + x] * w * h / (2 * PI * PI * sin(theta_phi.x)));
+//  return envMap->data[w * y + x];
 }
 
 Spectrum EnvironmentLight::sample_dir(const Ray& r) const {

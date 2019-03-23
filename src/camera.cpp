@@ -175,22 +175,19 @@ Ray Camera::generate_ray_for_thin_lens(double x, double y, double rndR, double r
   // Note: use rndR and rndTheta to uniformly sample a unit disk.
 
   double w_half = tan(radians(hFov) * 0.5), h_half = tan(radians(vFov) * 0.5);
-  Vector3D ideal_dir = c2w * Vector3D(
+  Vector3D ideal_dir = Vector3D(
       (2 * x - 1) * w_half,
       (2 * y - 1) * h_half,
       -1);
-  ideal_dir.normalize();
 
   Vector3D p_lens = lensRadius * sqrt(rndR) * Vector3D(cos(rndTheta), sin(rndTheta), 0);
-
-  double t = (-focalDistance - pos.z) / ideal_dir.z;
-  Vector3D p_focus = pos + t * ideal_dir;
-
+  Vector3D p_focus = ideal_dir / ideal_dir.z * (-focalDistance);
   Vector3D dir = p_focus - p_lens;
   dir.normalize();
 
-  Ray result(pos, dir);
+  Ray result(c2w * p_lens + pos, c2w * dir);
   result.min_t = nClip;
+  result.max_t = fClip;
   return result;
 }
 

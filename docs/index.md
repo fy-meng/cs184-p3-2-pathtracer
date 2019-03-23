@@ -199,10 +199,10 @@ environment light density for each pixel.
 
 For a pinhole camera, all light received by the camera comes from the 
 direction of the pinhole. However, this might not the be case for a 
-thin lens camera. Light could be distorted by the rim of the thin 
-lens and come from different directions. This created the idea of 
-depth of field, that only objects in a certain range of distance are 
-on focus, and other objects are blurred in the image.
+thin lens camera. Light could be distorted by the thin lens and come 
+from different directions. This created the idea of depth of field, that 
+only objects in a certain range of distance are on focus, and other 
+objects are blurred in the image.
 
 We implement this feature by sampling on a disk with radius `lensRadius`
 and centered at `pos` when generating the camera ray. Instead of 
@@ -242,21 +242,21 @@ and blurred.
         <tr>
             <td align="middle">
                 <img src="images/p4_lens_0.5.png" width="100%"/>
-                <figcaption align="middle"><code>lensRadius = 0.5<code></figcaption>
+                <figcaption align="middle"><code>lensRadius = 0.5</code></figcaption>
             </td>
             <td align="middle">
                 <img src="images/p4_lens_0.1.png" width="100%"/>
-                <figcaption align="middle"><code>lensRadius = 0.1<code></figcaption>
+                <figcaption align="middle"><code>lensRadius = 0.1</code></figcaption>
             </td>
         </tr>
         <tr>
             <td align="middle">
                 <img src="images/p4_lens_0.05.png" width="100%"/>
-                <figcaption align="middle"><code>lensRadius = 0.05<code></figcaption>
+                <figcaption align="middle"><code>lensRadius = 0.05</code></figcaption>
             </td>
             <td align="middle">
                 <img src="images/p4_lens_0.01.png" width="100%"/>
-                <figcaption align="middle"><code>lensRadius = 0.01<code></figcaption>
+                <figcaption align="middle"><code>lensRadius = 0.01</code></figcaption>
             </td>
         </tr>
     </table>

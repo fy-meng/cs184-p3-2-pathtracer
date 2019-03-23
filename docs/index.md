@@ -195,6 +195,37 @@ environment light density for each pixel.
     </table>
 </div>
 
+<div align="middle">
+    <table width="100%" align="middle">
+        <tr>
+            <td align="middle">
+                <img src="images/p3_diffuse_uniform.png" width="100%"/>
+                <figcaption align="middle">Diffuse surface with uniform sampling.</figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p3_diffuse_importance.png" width="100%"/>
+                <figcaption align="middle">Diffuse surface with importance sampling.</figcaption>
+            </td>
+        </tr>
+        <tr>
+            <td align="middle">
+                <img src="images/p3_microfacet_uniform.png" width="100%"/>
+                <figcaption align="middle">Microfacet surface with uniform sampling.</figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p3_microfacet_importancce.png" width="100%"/>
+                <figcaption align="middle">Microfacet surface with importance sampling.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+As we can see, using importance sampling on environment light makes 
+rendering a diffuse object less noisy; however, on a more reflective 
+object, the highlight area will be less noisy while darker areas will be
+more noisy, since we are more likely to sample from brighter locations
+on the environment light map.
+
 ## Part 4: Depth of Field
 
 For a pinhole camera, all light received by the camera comes from the 
@@ -252,7 +283,7 @@ and blurred.
         <tr>
             <td align="middle">
                 <img src="images/p4_lens_0.05.png" width="100%"/>
-                <figcaption align="middle"><code>lensRadius = 0.05</code></figcaption>
+                <figcaption align="middle"> <code>lensRadius = 0.05</code></figcaption>
             </td>
             <td align="middle">
                 <img src="images/p4_lens_0.01.png" width="100%"/>

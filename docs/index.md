@@ -138,8 +138,8 @@ the result.
     </table>
 </div>
 
-As we can see, a higher α value means that the macro surface tends 
-to be diffuse, and is glossy when α is small.
+As we can see, the material tends to diffuse when α is higher, and is 
+more glossy when α is small.
 
 <div align="middle">
     <table width="100%" align="middle">
@@ -203,3 +203,66 @@ thin lens camera. Light could be distorted by the rim of the thin
 lens and come from different directions. This created the idea of 
 depth of field, that only objects in a certain range of distance are 
 on focus, and other objects are blurred in the image.
+
+We implement this feature by sampling on a disk with radius `lensRadius`
+and centered at `pos` when generating the camera ray. Instead of 
+returning the ray from the camera location to the given direction, we
+return the ray from the random location of the disk to the corresponding
+point on the focal plane. This allows the objects around the focal plane
+to the on sharp while objects at other distances will be out of focus
+and blurred.
+
+<div align="middle">
+    <table width="100%" align="middle">
+        <tr>
+            <td align="middle">
+                <img src="images/p4_depth_2.1.png" width="100%"/>
+                <figcaption align="middle">Focused in front of the dragon.</figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p4_depth_2.5.png" width="100%"/>
+                <figcaption align="middle">Focused around the head of the dragon.</figcaption>
+            </td>
+        </tr>
+        <tr>
+            <td align="middle">
+                <img src="images/p4_depth_2.9.png" width="100%"/>
+                <figcaption align="middle">Focused around the tail of the dragon.</figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p4_depth_3.3.png" width="100%"/>
+                <figcaption align="middle">Focused behind the dragon.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div align="middle">
+    <table width="100%" align="middle">
+        <tr>
+            <td align="middle">
+                <img src="images/p4_lens_0.5.png" width="100%"/>
+                <figcaption align="middle"><code>lensRadius = 0.5<code></figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p4_lens_0.1.png" width="100%"/>
+                <figcaption align="middle"><code>lensRadius = 0.1<code></figcaption>
+            </td>
+        </tr>
+        <tr>
+            <td align="middle">
+                <img src="images/p4_lens_0.05.png" width="100%"/>
+                <figcaption align="middle"><code>lensRadius = 0.05<code></figcaption>
+            </td>
+            <td align="middle">
+                <img src="images/p4_lens_0.01.png" width="100%"/>
+                <figcaption align="middle"><code>lensRadius = 0.01<code></figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+As we can see, focused on the same plane, the smaller the lens radius is,
+the more part of the object can be on focus. If `lensRadius = 0`, then
+it should behave the same as if we did not implement the depth of field
+feature.

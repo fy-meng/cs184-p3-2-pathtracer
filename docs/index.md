@@ -213,7 +213,7 @@ environment light density for each pixel.
                 <figcaption align="middle">Microfacet surface with uniform sampling.</figcaption>
             </td>
             <td align="middle">
-                <img src="images/p3_microfacet_importancce.png" width="100%"/>
+                <img src="images/p3_microfacet_importance.png" width="100%"/>
                 <figcaption align="middle">Microfacet surface with importance sampling.</figcaption>
             </td>
         </tr>
@@ -283,7 +283,7 @@ and blurred.
         <tr>
             <td align="middle">
                 <img src="images/p4_lens_0.05.png" width="100%"/>
-                <figcaption align="middle"> <code>lensRadius = 0.05</code></figcaption>
+                <figcaption align="middle"><code>lensRadius = 0.05</code></figcaption>
             </td>
             <td align="middle">
                 <img src="images/p4_lens_0.01.png" width="100%"/>

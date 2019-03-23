@@ -54,7 +54,8 @@ double MicrofacetBSDF::D(const Vector3D& h) {
   // You will need the roughness alpha.
 
   double tan_t = tan(acos(h.z));
-  return exp(-tan_t * tan_t / alpha / alpha) / (PI * alpha * alpha * pow(h.z, 4));
+  double alpha_2 = alpha * alpha;
+  return exp(-tan_t * tan_t / alpha_2 - log(PI * alpha_2 * pow(h.z, 4)));
 }
 
 Spectrum MicrofacetBSDF::F(const Vector3D& wi) {
